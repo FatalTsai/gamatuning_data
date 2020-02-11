@@ -1,0 +1,91 @@
+
+D:\>adb shell
+sh-4.4# jetgamma
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] gamma_read_metadata()@134 : gamma_read_metadata
+[JET/DEBUG][Gamma] gamma_read_metadata()@172 : metadata is not initialised or corrupted dbaf9118.
+[JET/DEBUG][Gamma] main()@268 : misc don't have gamma data, do nothing
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma   -i /run/media/sda
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] readGammaConfig()@218 : Open config file error: /run/media/sda No such file or directory
+[JET/DEBUG][Gamma] main()@300 : Input data error
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma   -i /run/media/sda1/
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] readGammaConfig()@218 : Open config file error: /run/media/sda1/ Is a directory
+[JET/DEBUG][Gamma] main()@300 : Input data error
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma   -i /run/media/sda1/gold_gamma.conf
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@189 : gamma_apply_tabledata
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@194 : apply cmd start
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@202 : apply cmd end
+[JET/DEBUG][Gamma] main()@305 : Check g_savemisc: 0
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma   -i /run/media/sda1/gold_gamma.conf  -s
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@189 : gamma_apply_tabledata
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@194 : apply cmd start
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@202 : apply cmd end
+[JET/DEBUG][Gamma] main()@305 : Check g_savemisc: 1
+[JET/DEBUG][Gamma] main()@307 : Do write gamma data to misc
+[JET/DEBUG][Gamma] gamma_write_metadata()@85 : gamma_write_metadata
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# ^C
+sh-4.4# ^C
+sh-4.4#
+D:\>adb shell
+error: no devices/emulators found
+
+D:\>adb shell
+sh-4.4# jetgamma
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] gamma_read_metadata()@134 : gamma_read_metadata
+[JET/DEBUG][Gamma] main()@270 : misc have gamma data
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@189 : gamma_apply_tabledata
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@194 : apply cmd start
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@202 : apply cmd end
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4#
+D:\>
+D:\>adb shell
+sh-4.4# jetgamma
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] gamma_read_metadata()@134 : gamma_read_metadata
+[JET/DEBUG][Gamma] gamma_read_metadata()@172 : metadata is not initialised or corrupted d5526698.
+[JET/DEBUG][Gamma] main()@268 : misc don't have gamma data, do nothing
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma -i /run/media/sda1/
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] readGammaConfig()@218 : Open config file error: /run/media/sda1/ Is a directory
+[JET/DEBUG][Gamma] main()@300 : Input data error
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma -i /run/media/sda1/g
+gamma.conf       gamma3.conf      gamma5.conf      gamma7.conf
+gamma2.conf      gamma4.conf      gamma6.conf      gold_gamma.conf
+sh-4.4# jetgamma -i /run/media/sda1/gold_gamma.conf
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@189 : gamma_apply_tabledata
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@194 : apply cmd start
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@202 : apply cmd end
+[JET/DEBUG][Gamma] main()@305 : Check g_savemisc: 0
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4# jetgamma -i /run/media/sda1/gold_gamma.conf  -s
+[JET/DEBUG][Gamma] main()@264 : main
+[JET/DEBUG][Gamma] readGammaConfig()@215 : readGammaConfig
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@189 : gamma_apply_tabledata
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@194 : apply cmd start
+[JET/DEBUG][Gamma] gamma_apply_tabledata()@202 : apply cmd end
+[JET/DEBUG][Gamma] main()@305 : Check g_savemisc: 1
+[JET/DEBUG][Gamma] main()@307 : Do write gamma data to misc
+[JET/DEBUG][Gamma] gamma_write_metadata()@85 : gamma_write_metadata
+[JET/DEBUG][Gamma] main()@324 : main end
+sh-4.4#
+D:\>
