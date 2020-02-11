@@ -1,3 +1,6 @@
+
+const fs = require('fs')
+
 function binaryToHex(s) { 
 //func fork from https://stackoverflow.com/questions/17204912/javascript-need-functions-to-convert-a-string-containing-binary-to-hex-then-co
     var i, k, part, accum, ret = '';
@@ -60,6 +63,32 @@ function hexToBinary(s) {
     return { valid: true, result: ret };
 }
 
+function converttojson(filepath){
+    var file_buffer = fs.readFileSync(filepath,'utf8')
+    //console.log(file_buffer)
+    var cutpoint = file_buffer.indexOf('/*')
+    file_buffer = file_buffer.substr(0,cutpoint)
 
-console.log( hexToBinary ("0x3ffeb7ff"))
-console.log( binaryToHex("00111111111111101011011111111111"))
+    file_buffer = file_buffer.replace(/\{/g,"[")
+    file_buffer = file_buffer.replace(/\}/g,"]") // repalce all quote
+    //https://coder.tw/?p=7258
+
+    file_buffer = file_buffer.replace(/(?<!")(\b\d+\b)(?!")/g,`"$1"` ) //replace number to "number"
+    //https://stackoverflow.com/questions/40110706/regex-wrap-all-integers-in-double-quotes
+    //file_buffer = file_buffer.replace('[512][R]','red :')
+    //file_buffer = file_buffer.replace('////[512][G]','green :')
+    //console.log(file_buffer.indexOf('[B]') )
+    file_buffer = file_buffer.replace('//["512"][R]','"red":')
+    file_buffer = file_buffer.replace('//["512"][G]','"green":')
+    file_buffer = file_buffer.replace('//["512"][B]','"blue":')
+
+    file_buffer = file_buffer.replace(/,+\s+\]/g,']')
+
+
+    file_buffer = '{' +file_buffer +'}'
+    console.log(file_buffer)
+    return file_buffer
+}
+const filepath = './gamma_table.tbl'
+const ptr = 0x14015700
+converttojson(filepath)
