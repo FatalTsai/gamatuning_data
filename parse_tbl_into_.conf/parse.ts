@@ -63,7 +63,7 @@ function hexToBinary(s) {
     return { valid: true, result: ret };
 }
 
-function converttojson(filepath){
+ function  converttojson(filepath){
     var file_buffer = fs.readFileSync(filepath,'utf8')
     //console.log(file_buffer)
     var cutpoint = file_buffer.indexOf('/*')
@@ -82,7 +82,7 @@ function converttojson(filepath){
     file_buffer = file_buffer.replace('//["512"][G]','"green":')
     file_buffer = file_buffer.replace('//["512"][B]','"blue":')
 
-    file_buffer = file_buffer.replace(/,+\s+\]/g,']')
+    file_buffer = file_buffer.replace(/,+\s+\]/g,']') //https://regex101.com/r/qVQYA7/2
 
 
     file_buffer = '{' +file_buffer +'}'
@@ -91,4 +91,10 @@ function converttojson(filepath){
 }
 const filepath = './gamma_table.tbl'
 const ptr = 0x14015700
-converttojson(filepath)
+const  raw_data = JSON.parse( converttojson(filepath) )
+
+
+for(var i=0;i<512;i++)
+{
+    
+}
