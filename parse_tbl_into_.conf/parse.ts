@@ -53,6 +53,7 @@ function hexToBinary(s) {
         'E': '1110', 'F': '1111'
     };
     s=s.substr(2,s.length) // so as to delete '0x'
+
     for (i = 0; i < s.length; i += 1) {
         if (lookupTable.hasOwnProperty(s[i])) {
             ret += lookupTable[s[i]];
@@ -62,6 +63,22 @@ function hexToBinary(s) {
     }
     return { valid: true, result: ret };
 }
+
+function demcimaltobinary(n){ //
+    
+    //var n = 13;
+    //console.log(n.toString(2)) // "1101"
+    if(typeof(n) === 'string')
+    {
+        //console.log("fuck")
+        n = parseInt(n,10)
+    }
+    var bits = n.toString(2);
+    bits = "0000000000".substr(bits.length) + bits //fill zero 
+    return bits
+}
+
+
 
  function  converttojson(filepath){
     var file_buffer = fs.readFileSync(filepath,'utf8')
@@ -86,15 +103,30 @@ function hexToBinary(s) {
 
 
     file_buffer = '{' +file_buffer +'}'
-    console.log(file_buffer)
+    //console.log(file_buffer)
     return file_buffer
 }
 const filepath = './gamma_table.tbl'
-const ptr = 0x14015700
+const ptr = '0x14015700'
 const  raw_data = JSON.parse( converttojson(filepath) )
 
 
+fs.writeFileSync('bronze_gamma.conf','')
 for(var i=0;i<512;i++)
-{
+{ 
     
+    var pos,data  //data is Gamma_Lut_R,G,B's combining
+/*  //pos is the reg's location
+
+    console.log( "red : "+raw_data['red'][i] )
+    console.log( "green : "+raw_data['green'][i] )
+    console.log( "blue : "+raw_data['blue'][i] )
+*/
+
+    data = '00'+ demcimaltobinary(raw_data['red'][i]) +demcimaltobinary(raw_data['green'][i])+demcimaltobinary(raw_data['blue'][i])
+    data = binaryToHex(data).result
+
+    pos = parseInt(hexToBinary(ptr).result,2) + i*4
+    pos = binaryToHex(demcimaltobinary(pos)).result
+    fs.appendFileSync('bronze_gamma.conf',pos+'='+data+'\n')
 }
