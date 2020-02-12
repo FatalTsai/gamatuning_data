@@ -1,7 +1,7 @@
 
 var fs = require('fs')
 
-function binaryToHex(s) { 
+var binaryToHex =function(s) { 
 //func fork from https://stackoverflow.com/questions/17204912/javascript-need-functions-to-convert-a-string-containing-binary-to-hex-then-co
     var i, k, part, accum, ret = '';
     for (i = s.length-1; i >= 3; i -= 4) {
@@ -132,4 +132,11 @@ for(var i=0;i<512;i++)
 }
 
  //module.exports = {converttojson};
- module.exports = converttojson;
+ module.exports = {
+     converttojson,
+     binaryToHex,
+     hexToBinary,
+     demcimaltobinary,
+     ptr
+
+};
