@@ -1,17 +1,18 @@
 
 var parse = require('../parse_tbl_into_.conf/parse.ts')
 var fs = require('fs')
-var panel5path = './panel5.json'
+var panel5path = './testresult.json'
 var process = require('child_process');
 const exec = require('child_process').exec;
 const iconv = require('iconv-lite');
-const patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,224,240,255]
+const patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,255]
 
 
 var raw_data = JSON.parse(fs.readFileSync(panel5path,'utf8'))
 //console.log(raw_data)
 
-function padding(num, length) {
+function padding(num) {
+    var length =4
     for(var len = (num + "").length; len < length; len = num.length) {
         num = "0" + num;            
     }
@@ -86,9 +87,21 @@ function roundall(data)
      return data
 }
 
+function showcontrolpts(){
+   // console.log(JSON.stringify(raw_data))
+    console.log('pts   |  R  |  G  |  B ')
+ 
 
-
-modifypoint('red',255,1022)
+    /*console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i*2]])} |`+
+    ` ${padding(raw_data['green'][patterns[i*2]])} | ${(raw_data['blue'][patterns[i*2]])} `)*/
+    for(var i=0;i<patterns.length;i++){
+        console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
+        ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
+    }
+}
+modifypoint('red',0,0)
+modifypoint('green',0,0)
+modifypoint('blue',0,0)
 
 //console.log(roundall(raw_data))
 //roundall(raw_data)
@@ -127,25 +140,32 @@ function exec(shell) {
          }
      });
 }*/
- exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /test`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
-    if(error) {
-        //console.error('error: ' + iconv.decode(error,'cp950'));
-        console.error('error: '+error)
-        return;
-    }
-    console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-    console.log('stderr: ' + typeof stderr);
-});
+setTimeout(function(){
+     exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /test`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+        if(error) {
+            //console.error('error: ' + iconv.decode(error,'cp950'));
+            console.error('error: '+error)
+            return;
+        }
+        //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+        //console.log('stderr: ' + typeof stderr);
+    });
 
- exec(`adb shell jetgamma -i  /test/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
-    if(error) {
-        //console.error('error: ' + iconv.decode(error,'cp950'));
-        console.error('error: '+error)
-        return;
-    }
-    console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-    console.log('stderr: ' + typeof stderr);
-});
+    jetgamma()
+},500)
+function jetgamma(){
+    setTimeout(function(){
+         exec(`adb shell jetgamma -i  /test/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+            if(error) {
+                //console.error('error: ' + iconv.decode(error,'cp950'));
+                console.error('error: '+error)
+                return;
+            }
+            //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+            //console.log('stderr: ' + typeof stderr);
+        });
 
+        showcontrolpts()
 
-
+    },500)
+}
