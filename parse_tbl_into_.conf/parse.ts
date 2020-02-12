@@ -1,5 +1,5 @@
 
-const fs = require('fs')
+var fs = require('fs')
 
 function binaryToHex(s) { 
 //func fork from https://stackoverflow.com/questions/17204912/javascript-need-functions-to-convert-a-string-containing-binary-to-hex-then-co
@@ -80,7 +80,7 @@ function demcimaltobinary(n){ //
 
 
 
- function  converttojson(filepath){
+var converttojson = function  (filepath){
     var file_buffer = fs.readFileSync(filepath,'utf8')
     //console.log(file_buffer)
     var cutpoint = file_buffer.indexOf('/*')
@@ -106,9 +106,9 @@ function demcimaltobinary(n){ //
     //console.log(file_buffer)
     return file_buffer
 }
-const filepath = './gamma_table.tbl'
+const filepath = '../parse_tbl_into_.conf/gamma_table.tbl'
 const ptr = '0x14015700'
-const  raw_data = JSON.parse( converttojson(filepath) )
+var  raw_data = JSON.parse( converttojson(filepath) )
 
 
 fs.writeFileSync('bronze_gamma.conf','')
@@ -130,3 +130,6 @@ for(var i=0;i<512;i++)
     pos = binaryToHex(demcimaltobinary(pos)).result
     fs.appendFileSync('bronze_gamma.conf',pos+'='+data+'\n')
 }
+
+ //module.exports = {converttojson};
+ module.exports = converttojson;
