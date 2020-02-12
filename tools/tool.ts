@@ -2,12 +2,21 @@
 var parse = require('../parse_tbl_into_.conf/parse.ts')
 var fs = require('fs')
 var panel5path = './panel5.json'
+var process = require('child_process');
+const exec = require('child_process').exec;
+const iconv = require('iconv-lite');
 const patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,224,240,255]
 
 
 var raw_data = JSON.parse(fs.readFileSync(panel5path,'utf8'))
 //console.log(raw_data)
 
+function padding(num, length) {
+    for(var len = (num + "").length; len < length; len = num.length) {
+        num = "0" + num;            
+    }
+    return num;
+}//https://blog.csdn.net/chy555chy/article/details/62886715
 
 
 function modifypoint(color,point,value) //e.g. 240, red
@@ -20,7 +29,7 @@ function modifypoint(color,point,value) //e.g. 240, red
     }
 
 
-    console.log(`point ${point} ${color} is to ${raw_data[color][point*2]}`)
+    console.log(`point ${point} ${color} is  ${raw_data[color][point*2]}`)
     raw_data[color][point*2] = String(value)
     console.log(`point ${point} ${color} change to ${value}`)
 
@@ -79,14 +88,14 @@ function roundall(data)
 
 
 
-modifypoint('red',255,87)
+modifypoint('red',255,1022)
+
 //console.log(roundall(raw_data))
 //roundall(raw_data)
-
+roundall(raw_data)
 fs.writeFileSync('./testresult.json',JSON.stringify(raw_data))
 
 //console.log(parse.binaryToHex(255))
-
 
 fs.writeFileSync('testresult.conf','')
 for(var i=0;i<512;i++)
@@ -106,5 +115,37 @@ for(var i=0;i<512;i++)
 
     pos = parseInt(parse.hexToBinary(parse.ptr).result,2) + i*4
     pos = parse.binaryToHex(parse.demcimaltobinary(pos)).result
-    fs.appendFileSync('bronze_gamma.conf',pos+'='+data+'\n')
+    //console.log(`red :reg${i} ${raw_data['red'][i]} \n`)
+    //console.log(pos+'='+data+'\n')
+    fs.appendFileSync('testresult.conf',pos+'='+data+'\n')
 }
+/*
+function exec(shell) {
+     process.exec(shell,function (error, stdout, stderr) {
+         if (error !== null) {
+          console.log('exec error: ' + error);
+         }
+     });
+}*/
+ exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /test`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+    if(error) {
+        //console.error('error: ' + iconv.decode(error,'cp950'));
+        console.error('error: '+error)
+        return;
+    }
+    console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+    console.log('stderr: ' + typeof stderr);
+});
+
+ exec(`adb shell jetgamma -i  /test/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+    if(error) {
+        //console.error('error: ' + iconv.decode(error,'cp950'));
+        console.error('error: '+error)
+        return;
+    }
+    console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+    console.log('stderr: ' + typeof stderr);
+});
+
+
+
