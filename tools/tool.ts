@@ -99,10 +99,11 @@ function showcontrolpts(){
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
     }
 }
+
 var thepoint = 16
-modifypoint('red',thepoint,54)
-modifypoint('green',thepoint,45)
-modifypoint('blue',thepoint,39)
+modifypoint('red',thepoint,56)
+modifypoint('green',thepoint,47)
+modifypoint('blue',thepoint,42)
 
 //console.log(roundall(raw_data))
 //roundall(raw_data)
