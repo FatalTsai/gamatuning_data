@@ -99,9 +99,10 @@ function showcontrolpts(){
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
     }
 }
-modifypoint('red',0,0)
-modifypoint('green',0,0)
-modifypoint('blue',0,0)
+var thepoint =255
+modifypoint('red',thepoint,58)
+modifypoint('green',thepoint,1023)
+modifypoint('blue',thepoint,1023)
 
 //console.log(roundall(raw_data))
 //roundall(raw_data)
@@ -141,28 +142,28 @@ function exec(shell) {
      });
 }*/
 setTimeout(function(){
-     exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /test`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+     exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /data`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
         if(error) {
             //console.error('error: ' + iconv.decode(error,'cp950'));
             console.error('error: '+error)
             return;
         }
-        //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-        //console.log('stderr: ' + typeof stderr);
+        console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+        console.log('stderr: ' + typeof stderr);
     });
 
     jetgamma()
 },500)
 function jetgamma(){
     setTimeout(function(){
-         exec(`adb shell jetgamma -i  /test/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+         exec(`adb shell  ./data/jetgamma -i  /data/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
             if(error) {
                 //console.error('error: ' + iconv.decode(error,'cp950'));
                 console.error('error: '+error)
                 return;
             }
-            //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-            //console.log('stderr: ' + typeof stderr);
+            console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+            console.log('stderr: ' + typeof stderr);
         });
 
         showcontrolpts()
