@@ -99,10 +99,10 @@ function showcontrolpts(){
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
     }
 }
-var thepoint =255
-modifypoint('red',thepoint,58)
-modifypoint('green',thepoint,1023)
-modifypoint('blue',thepoint,1023)
+var thepoint = 16
+modifypoint('red',thepoint,54)
+modifypoint('green',thepoint,45)
+modifypoint('blue',thepoint,39)
 
 //console.log(roundall(raw_data))
 //roundall(raw_data)
@@ -162,8 +162,8 @@ function jetgamma(){
                 console.error('error: '+error)
                 return;
             }
-            console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-            console.log('stderr: ' + typeof stderr);
+            //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+            //console.log('stderr: ' + typeof stderr);
         });
 
         showcontrolpts()
