@@ -3,8 +3,8 @@ var parse = require('../parse_tbl_into_.conf/parse.ts')
 var fs = require('fs')
 var panel5path = './testresult.json'
 var process = require('child_process');
-const exec = require('child_process').exec;
-const iconv = require('iconv-lite');
+var exec = require('child_process').exec;
+var iconv = require('iconv-lite');
 const patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,255]
 
 
@@ -58,6 +58,10 @@ function modifypoint(color,point,value) //e.g. 240, red
     
 
 }
+function fixed(num)
+{
+    return num.toFixed(3)
+}
 
 function roundall(data)
 {
@@ -90,24 +94,75 @@ function roundall(data)
 function showcontrolpts(){
    // console.log(JSON.stringify(raw_data))
     console.log('pts   |  R  |  G  |  B ')
- 
+    fs.appendFileSync('./2_slpoe','pts   |  R  |  G  |  B \n')
 
     /*console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i*2]])} |`+
     ` ${padding(raw_data['green'][patterns[i*2]])} | ${(raw_data['blue'][patterns[i*2]])} `)*/
     for(var i=0;i<patterns.length;i++){
         console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
+
+        fs.appendFileSync('./2_slpoe',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
+        ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} \n`)
     }
 }
 
-var thepoint = 16
+function showdiffer(){
+    // console.log(JSON.stringify(raw_data))
+    console.log('pts    |  R  |  G  |  B ')
+    fs.appendFileSync('./2_slpoe','pts   |  R  |  G  |  B \n')
+
+    for(var i=0;i<patterns.length;i++){
+        var red_last = raw_data['red'][patterns[i-1]*2]
+        var green_last = raw_data['green'][patterns[i-1]*2]
+        var blue_last= raw_data['blue'][patterns[i-1]*2]
+
+ /*       console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ]/red_last)} |`+
+        ` ${padding(raw_data['green'][patterns[i]*2 ]/green_last)} | ${(raw_data['blue'][patterns[i]*2]/blue_last)} `)*/
+        
+        console.log(`${padding(patterns[i])}   | ${fixed(red_last/raw_data['red'][patterns[i]*2  ])} |`+
+        ` ${fixed(green_last/raw_data['green'][patterns[i]*2 ])} | ${fixed(blue_last/raw_data['blue'][patterns[i]*2])} `)
+
+        fs.appendFileSync('./2_slope',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ]-red_last)} |`+
+        ` ${padding(raw_data['green'][patterns[i]*2 ]-green_last)} | ${(raw_data['blue'][patterns[i]*2]-blue_last)} `)
+    }
+ }
+
+
+function showslope(data){ // adjust all brightest pattern to 1000,to see the slope
+
+    var brightest ={
+        'red': raw_data['red'][patterns[patterns.length-1]*2],
+        'green': raw_data['green'][patterns[patterns.length-1]*2],
+        'blue': raw_data['blue'][patterns[patterns.length-1]*2]
+    }
+
+
+    data['red'].forEach(function(part, index) {
+        this[index] = (1000/brightest['red'])*this[index]
+      }, data['red']);
+    data['green'].forEach(function(part, index) {
+    this[index] = (1000/brightest['green'])*this[index]
+    }, data['green']);    
+    data['blue'].forEach(function(part, index) {
+    this[index] = (1000/brightest['blue'])*this[index]
+    }, data['blue']);
+
+    return data
+}
+
+
+/*
+var thepoint = 255
 modifypoint('red',thepoint,56)
 modifypoint('green',thepoint,47)
 modifypoint('blue',thepoint,42)
-
+*/
 //console.log(roundall(raw_data))
 //roundall(raw_data)
-roundall(raw_data)
+//showslope(raw_data)
+fs.writeFileSync('./2_slpoe','')
+roundall(showslope(raw_data))
 fs.writeFileSync('./testresult.json',JSON.stringify(raw_data))
 
 //console.log(parse.binaryToHex(255))
@@ -149,8 +204,8 @@ setTimeout(function(){
             console.error('error: '+error)
             return;
         }
-        console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-        console.log('stderr: ' + typeof stderr);
+        //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+        //console.log('stderr: ' + typeof stderr);
     });
 
     jetgamma()
@@ -168,6 +223,6 @@ function jetgamma(){
         });
 
         showcontrolpts()
-
+        showdiffer()
     },500)
 }
