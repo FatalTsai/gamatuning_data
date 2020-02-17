@@ -1,11 +1,11 @@
 
 var parse = require('../parse_tbl_into_.conf/parse.ts')
 var fs = require('fs')
-var panel5path = './testresult.json'
+var panel5path = '../tools/testresult.json'
 var process = require('child_process');
 var exec = require('child_process').exec;
 var iconv = require('iconv-lite');
-const patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,255]
+var patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,255]
 
 
 var raw_data = JSON.parse(fs.readFileSync(panel5path,'utf8'))
@@ -20,7 +20,7 @@ function padding(num) {
 }//https://blog.csdn.net/chy555chy/article/details/62886715
 
 
-function modifypoint(color,point,value) //e.g. 240, red
+var modifypoint = function (color,point,value) //e.g. 240, red
 {
     var index = patterns.indexOf(point)
     if( index === undefined)
@@ -94,7 +94,7 @@ function roundall(data)
 function showcontrolpts(){
    // console.log(JSON.stringify(raw_data))
     console.log('pts   |  R  |  G  |  B ')
-    fs.appendFileSync('./2_slpoe','pts   |  R  |  G  |  B \n')
+    fs.appendFileSync('8_ratio','pts   |  R  |  G  |  B \n')
 
     /*console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i*2]])} |`+
     ` ${padding(raw_data['green'][patterns[i*2]])} | ${(raw_data['blue'][patterns[i*2]])} `)*/
@@ -102,15 +102,15 @@ function showcontrolpts(){
         console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
 
-        fs.appendFileSync('./2_slpoe',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
+        fs.appendFileSync('8_ratio',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} \n`)
     }
 }
 
-function showdiffer(){
+function showratio(){
     // console.log(JSON.stringify(raw_data))
     console.log('pts    |  R  |  G  |  B ')
-    fs.appendFileSync('./2_slpoe','pts   |  R  |  G  |  B \n')
+    //fs.appendFileSync('./2_slpoe','pts   |  R  |  G  |  B \n')
 
     for(var i=0;i<patterns.length;i++){
         var red_last = raw_data['red'][patterns[i-1]*2]
@@ -123,8 +123,8 @@ function showdiffer(){
         console.log(`${padding(patterns[i])}   | ${fixed(red_last/raw_data['red'][patterns[i]*2  ])} |`+
         ` ${fixed(green_last/raw_data['green'][patterns[i]*2 ])} | ${fixed(blue_last/raw_data['blue'][patterns[i]*2])} `)
 
-        fs.appendFileSync('./2_slope',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ]-red_last)} |`+
-        ` ${padding(raw_data['green'][patterns[i]*2 ]-green_last)} | ${(raw_data['blue'][patterns[i]*2]-blue_last)} `)
+        /*fs.appendFileSync('./2_slope',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ]-red_last)} |`+
+        ` ${padding(raw_data['green'][patterns[i]*2 ]-green_last)} | ${(raw_data['blue'][patterns[i]*2]-blue_last)} `)*/
     }
  }
 
@@ -152,17 +152,25 @@ function showslope(data){ // adjust all brightest pattern to 1000,to see the slo
 }
 
 
+
+var thepoint = 16
+modifypoint('red',thepoint,52)
+modifypoint('green',thepoint,42)
+modifypoint('blue',thepoint,44)
+
+
 /*
 var thepoint = 255
-modifypoint('red',thepoint,56)
-modifypoint('green',thepoint,47)
-modifypoint('blue',thepoint,42)
+modifypoint('red',thepoint,985)
+modifypoint('green',thepoint,850)
+modifypoint('blue',thepoint,1023)
 */
 //console.log(roundall(raw_data))
 //roundall(raw_data)
 //showslope(raw_data)
-fs.writeFileSync('./2_slpoe','')
+//fs.writeFileSync('./2_slpoe','')
 roundall(showslope(raw_data))
+//roundall(raw_data)
 fs.writeFileSync('./testresult.json',JSON.stringify(raw_data))
 
 //console.log(parse.binaryToHex(255))
@@ -200,11 +208,11 @@ function exec(shell) {
 setTimeout(function(){
      exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /data`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
         if(error) {
-            //console.error('error: ' + iconv.decode(error,'cp950'));
+            console.error('error: ' + iconv.decode(error,'cp950'));
             console.error('error: '+error)
             return;
         }
-        //console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+        console.log('stdout: ' + iconv.decode(stdout,'cp950'));
         //console.log('stderr: ' + typeof stderr);
     });
 
@@ -212,9 +220,11 @@ setTimeout(function(){
 },500)
 function jetgamma(){
     setTimeout(function(){
-         exec(`adb shell  ./data/jetgamma -i  /data/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+         //exec(`adb shell  ./data/jetgamma -i  /data/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+        exec(`adb shell  jetgamma -i  /data/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+
             if(error) {
-                //console.error('error: ' + iconv.decode(error,'cp950'));
+                console.error('error: ' + iconv.decode(error,'cp950'));
                 console.error('error: '+error)
                 return;
             }
@@ -223,6 +233,11 @@ function jetgamma(){
         });
 
         showcontrolpts()
-        showdiffer()
+        //showratio()
     },500)
 }
+
+module.exports = {
+    modifypoint,
+    patterns
+};
