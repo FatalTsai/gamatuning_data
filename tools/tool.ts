@@ -1,17 +1,15 @@
-
-var parse = require('../parse_tbl_into_.conf/parse.ts')
+var parse = require('../parse_tbl_into_.conf/parse_lib.ts')
 var fs = require('fs')
 var panel5path = '../tools/testresult.json'
-var process = require('child_process');
+//var process = require('child_process');
 var exec = require('child_process').exec;
 var iconv = require('iconv-lite');
 var patterns =[0,16,32,48,64,80,96,112,128,144,160,176,192,208,224,240,255]
 
-
 var raw_data = JSON.parse(fs.readFileSync(panel5path,'utf8'))
 //console.log(raw_data)
 
-function padding(num) {
+ var padding = function(num) {
     var length =4
     for(var len = (num + "").length; len < length; len = num.length) {
         num = "0" + num;            
@@ -58,12 +56,12 @@ var modifypoint = function (color,point,value) //e.g. 240, red
     
 
 }
-function fixed(num)
+var fixed =  function(num)
 {
     return num.toFixed(3)
 }
 
-function roundall(data)
+var roundall =function(data)
 {
    
     data['red'].forEach(function(part, index) {
@@ -91,10 +89,11 @@ function roundall(data)
      return data
 }
 
-function showcontrolpts(){
+ var showcontrolpts =function(){
    // console.log(JSON.stringify(raw_data))
+   var filename = 'record'
     console.log('pts   |  R  |  G  |  B ')
-    fs.appendFileSync('8_ratio','pts   |  R  |  G  |  B \n')
+    fs.writeFileSync(filename,'pts   |  R  |  G  |  B \n')
 
     /*console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i*2]])} |`+
     ` ${padding(raw_data['green'][patterns[i*2]])} | ${(raw_data['blue'][patterns[i*2]])} `)*/
@@ -102,12 +101,12 @@ function showcontrolpts(){
         console.log(`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} `)
 
-        fs.appendFileSync('8_ratio',`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
+        fs.appendFileSync(filename,`${padding(patterns[i])}   | ${padding(raw_data['red'][patterns[i]*2  ] )} |`+
         ` ${padding(raw_data['green'][patterns[i]*2 ])} | ${(raw_data['blue'][patterns[i]*2])} \n`)
     }
 }
 
-function showratio(){
+var showratio = function(){
     // console.log(JSON.stringify(raw_data))
     console.log('pts    |  R  |  G  |  B ')
     //fs.appendFileSync('./2_slpoe','pts   |  R  |  G  |  B \n')
@@ -129,7 +128,7 @@ function showratio(){
  }
 
 
-function showslope(data){ // adjust all brightest pattern to 1000,to see the slope
+var showslope = function(data){ // adjust all brightest pattern to 1000,to see the slope
 
     var brightest ={
         'red': raw_data['red'][patterns[patterns.length-1]*2],
@@ -152,79 +151,65 @@ function showslope(data){ // adjust all brightest pattern to 1000,to see the slo
 }
 
 
+var writeconf = function()
+{
+    fs.writeFileSync('testresult.conf','')
+    for(var i=0;i<512;i++)
+    { 
+        
+        var pos,data  //data is Gamma_Lut_R,G,B's combining
+    //pos is the reg's location
 
-var thepoint = 16
-modifypoint('red',thepoint,52)
-modifypoint('green',thepoint,42)
-modifypoint('blue',thepoint,44)
+        //console.log( "red : "+raw_data['red'][i] )
+        //console.log( "green : "+raw_data['green'][i] )
+        //console.log( "blue : "+raw_data['blue'][i] )
 
+        data = '00'+ parse.demcimaltobinary(raw_data['red'][i]) +parse.demcimaltobinary(raw_data['green'][i])+
+        parse.demcimaltobinary(raw_data['blue'][i])
 
-/*
-var thepoint = 255
-modifypoint('red',thepoint,985)
-modifypoint('green',thepoint,850)
-modifypoint('blue',thepoint,1023)
-*/
-//console.log(roundall(raw_data))
-//roundall(raw_data)
-//showslope(raw_data)
-//fs.writeFileSync('./2_slpoe','')
-roundall(showslope(raw_data))
-//roundall(raw_data)
-fs.writeFileSync('./testresult.json',JSON.stringify(raw_data))
+        data = parse.binaryToHex(data).result
 
-//console.log(parse.binaryToHex(255))
-
-fs.writeFileSync('testresult.conf','')
-for(var i=0;i<512;i++)
-{ 
-    
-    var pos,data  //data is Gamma_Lut_R,G,B's combining
-  //pos is the reg's location
-
-    //console.log( "red : "+raw_data['red'][i] )
-    //console.log( "green : "+raw_data['green'][i] )
-    //console.log( "blue : "+raw_data['blue'][i] )
-
-    data = '00'+ parse.demcimaltobinary(raw_data['red'][i]) +parse.demcimaltobinary(raw_data['green'][i])+
-    parse.demcimaltobinary(raw_data['blue'][i])
-
-    data = parse.binaryToHex(data).result
-
-    pos = parseInt(parse.hexToBinary(parse.ptr).result,2) + i*4
-    pos = parse.binaryToHex(parse.demcimaltobinary(pos)).result
-    //console.log(`red :reg${i} ${raw_data['red'][i]} \n`)
-    //console.log(pos+'='+data+'\n')
-    fs.appendFileSync('testresult.conf',pos+'='+data+'\n')
+        pos = parseInt(parse.hexToBinary(parse.ptr).result,2) + i*4
+        pos = parse.binaryToHex(parse.demcimaltobinary(pos)).result
+        //console.log(`red :reg${i} ${raw_data['red'][i]} \n`)
+        //console.log(pos+'='+data+'\n')
+        fs.appendFileSync('testresult.conf',pos+'='+data+'\n')
+    }
 }
-/*
-function exec(shell) {
-     process.exec(shell,function (error, stdout, stderr) {
-         if (error !== null) {
-          console.log('exec error: ' + error);
-         }
-     });
-}*/
-setTimeout(function(){
-     exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /data`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
-        if(error) {
-            console.error('error: ' + iconv.decode(error,'cp950'));
-            console.error('error: '+error)
-            return;
-        }
-        console.log('stdout: ' + iconv.decode(stdout,'cp950'));
-        //console.log('stderr: ' + typeof stderr);
-    });
 
-    jetgamma()
-},500)
-function jetgamma(){
+var execshell = function()
+{
+        /*
+    function exec(shell) {
+         process.exec(shell,function (error, stdout, stderr) {
+             if (error !== null) {
+              console.log('exec error: ' + error);
+             }
+         });
+    }*/
+    setTimeout(function(){
+         exec(`adb push D:/cheney.tsai/Desktop/gamatuning_data/tools/testresult.conf /data`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
+            if(error) {
+                //console.error('error: ' + iconv.decode(error,'cp950'));
+                console.error('error: '+error)
+                return;
+            }
+            console.log('stdout: ' + iconv.decode(stdout,'cp950'));
+            //console.log('stderr: ' + typeof stderr);
+        });
+
+        jetgamma()
+    },500)
+    
+}
+
+var  jetgamma  = function(){
     setTimeout(function(){
          //exec(`adb shell  ./data/jetgamma -i  /data/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
         exec(`adb shell  jetgamma -i  /data/testresult.conf -s`,{encoding:'binaryEncoding'}, function(error, stdout, stderr){
 
             if(error) {
-                console.error('error: ' + iconv.decode(error,'cp950'));
+                //console.error('error: ' + iconv.decode(error,'cp950'));
                 console.error('error: '+error)
                 return;
             }
@@ -237,7 +222,21 @@ function jetgamma(){
     },500)
 }
 
+
+
+
+
+
 module.exports = {
+    patterns,
+    raw_data,
     modifypoint,
-    patterns
+    roundall,
+    showcontrolpts,
+    showratio,
+    showslope,
+    execshell,
+    jetgamma,
+    writeconf,
+    fixed
 };

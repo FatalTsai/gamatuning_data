@@ -106,30 +106,37 @@ var converttojson = function  (filepath){
     //console.log(file_buffer)
     return file_buffer
 }
-const filepath = '../parse_tbl_into_.conf/gamma_table.tbl'
+
 const ptr = '0x14015700'
-var  raw_data = JSON.parse( converttojson(filepath) )
+
+var writeconf = function(){
+    const filepath = '../parse_tbl_into_.conf/gamma_table.tbl'
+    var  raw_data = JSON.parse( converttojson(filepath) )
 
 
-fs.writeFileSync('bronze_gamma.conf','')
-for(var i=0;i<512;i++)
-{ 
-    
-    var pos,data  //data is Gamma_Lut_R,G,B's combining
-/*  //pos is the reg's location
+    fs.writeFileSync('bronze_gamma.conf','')
+    for(var i=0;i<512;i++)
+    { 
+        
+        var pos,data  //data is Gamma_Lut_R,G,B's combining
+    /*  //pos is the reg's location
 
-    console.log( "red : "+raw_data['red'][i] )
-    console.log( "green : "+raw_data['green'][i] )
-    console.log( "blue : "+raw_data['blue'][i] )
-*/
+        console.log( "red : "+raw_data['red'][i] )
+        console.log( "green : "+raw_data['green'][i] )
+        console.log( "blue : "+raw_data['blue'][i] )
+    */
 
-    data = '00'+ demcimaltobinary(raw_data['red'][i]) +demcimaltobinary(raw_data['green'][i])+demcimaltobinary(raw_data['blue'][i])
-    data = binaryToHex(data).result
+        data = '00'+ demcimaltobinary(raw_data['red'][i]) +demcimaltobinary(raw_data['green'][i])+demcimaltobinary(raw_data['blue'][i])
+        data = binaryToHex(data).result
 
-    pos = parseInt(hexToBinary(ptr).result,2) + i*4
-    pos = binaryToHex(demcimaltobinary(pos)).result
-    fs.appendFileSync('bronze_gamma.conf',pos+'='+data+'\n')
+        pos = parseInt(hexToBinary(ptr).result,2) + i*4
+        pos = binaryToHex(demcimaltobinary(pos)).result
+        fs.appendFileSync('bronze_gamma.conf',pos+'='+data+'\n')
+    }
+
 }
+
+//writeconf()
 
  //module.exports = {converttojson};
  module.exports = {
@@ -137,6 +144,7 @@ for(var i=0;i<512;i++)
      binaryToHex,
      hexToBinary,
      demcimaltobinary,
-     ptr
+     ptr,
+     writeconf
 
 };
